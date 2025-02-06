@@ -18,8 +18,8 @@ MonoBehaviour:
   m_PlatformBuildProfile:
     rid: 8918645098436624384
   m_Scenes:
-  - m_enabled: 0
-    m_path: Assets/Scenes/Main Menu.unity
+  - m_enabled: 1
+    m_path: Assets/Scenes/DestroyBlocks.unity
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:
     m_Settings:
@@ -35,7 +35,7 @@ MonoBehaviour:
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 60'
     - line: '|   companyName: DefaultCompany'
-    - line: '|   productName: Canon War'
+    - line: '|   productName: Lord'
     - line: '|   defaultCursor: {instanceID: 0}'
     - line: '|   cursorHotspot: {x: 0, y: 0}'
     - line: '|   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b:

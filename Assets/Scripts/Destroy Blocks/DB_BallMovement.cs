@@ -1,47 +1,89 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class DB_BallMovement : MonoBehaviour
 {
-    public float speed = 5f; // Constant speed of the ball
-    private Rigidbody2D rb;  // Reference to the Rigidbody2D component
-    private Vector2 velocity; // Ball's velocity vector
-    private bool isBallMoving = false;
 
-    void Start()
+    /// <summary>
+    /// Script simply moves the ball and
+    /// plays a sound on collision
+    /// </summary>
+
+    [Header("Movement Settings")]
+    [Tooltip("The speed at which the ball moves.")]
+    [SerializeField] private float speed = 250f;
+
+    [SerializeField]
+    private Transform ballSpawnPosition; // where thw ball will be at starting of game
+
+    public Rigidbody2D rb; // its public cause other scripts access it to change values
+
+
+    [Header("Audio Settings")]
+    [SerializeField]
+    // Reference to the AudioSource component.
+    private AudioSource audioSource;
+    //private DB_audioPlayer audioPlayer;
+
+    [SerializeField]
+    private AudioClip ballCollidingClip;
+
+    [SerializeField]
+    private AudioClip ballSpawnClip;
+
+    private void Awake()
     {
+        // Get the AudioSource component attached to this GameObject.
+        audioSource = GetComponent<AudioSource>();
+
+        // Cache the Rigidbody2D component.
         rb = GetComponent<Rigidbody2D>();
-        velocity = new Vector2(1, 1).normalized * speed; // Initialize with a default direction and speed
 
-        Invoke("startMoving", 2);
+        // Optional: ensure no drag slows the ball down.
+        rb.drag = 0f;
+        rb.angularDrag = 0f;
     }
 
-    void Update()
+    public void StartMoving()
     {
-        if (isBallMoving)
+        // position the ball and call the function to move the ball
+        transform.position = ballSpawnPosition.position;
+        gameObject.SetActive(true);       
+
+        Invoke(nameof(move), 2);
+
+    }   
+
+    private void move()
+    {
+        playAudio(ballSpawnClip); // play a clip on ball Spawn
+
+        // Generate a random horizontal component between -1 and 1, and a fixed downward component.
+        Vector2 forceDirection = new Vector2(Random.Range(-1f, 1f), -1f).normalized;
+
+        // Apply the force using Impulse so the ball starts moving immediately.
+        rb.AddForce(forceDirection * speed, ForceMode2D.Impulse);
+    }
+
+    public void playAudio(AudioClip clip)
+    {
+        audioSource.clip = clip;
+        audioSource.Play();
+    }
+
+    private void FixedUpdate()
+    {
+        // If the ball is moving, normalize the velocity so it always has the exact speed.
+        if (rb.velocity != Vector2.zero)
         {
-            // Update the velocity every frame to keep it moving at constant speed
-            rb.velocity = velocity;
+            rb.velocity = rb.velocity.normalized * speed;
         }
-        
     }
 
-    private void startMoving()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        isBallMoving = true;
+        playAudio (ballCollidingClip);
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Reflect the velocity based on the collision normal
-       // if (collision.collider.CompareTag("Wall") || collision.collider.CompareTag("Paddle"))
-       
-        
-            // Get the normal of the surface that the ball collided with
-            Vector2 normal = collision.contacts[0].normal;
-
-            // Reflect the velocity based on the normal
-            velocity = Vector2.Reflect(velocity, normal).normalized * speed; // Normalize to keep constant speed
-        
-    }
 
 }
